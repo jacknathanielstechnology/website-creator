@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreEdge Engineering — Embedded Systems Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0d10;
+    --bg2: #0f1318;
+    --bg3: #161c24;
+    --accent: #00e5ff;
+    --accent2: #0099bb;
+    --text: #e8eef4;
+    --muted: #6b7c8d;
+    --border: rgba(0,229,255,0.12);
+    --border2: rgba(0,229,255,0.06);
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* --- GRID OVERLAY --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* --- NAV --- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 5vw;
+    background: rgba(10,13,16,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .logo span { color: var(--text); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  nav ul a {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav ul a:hover { color: var(--accent); }
+
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent);
+    padding: 0.45rem 1.2rem;
+    border-radius: 2px;
+    transition: background 0.2s, color 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    background: var(--accent) !important;
+    color: var(--bg) !important;
+  }
+
+  /* --- HERO --- */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 5vw;
+    padding-top: 6rem;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(2.8rem, 7vw, 6rem);
+    font-weight: 700;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 2rem;
+    max-width: 800px;
+  }
+
+  h1 .line-accent { color: var(--accent); }
+
+  .hero-desc {
+    font-family: var(--sans);
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: rgba(232,238,244,0.7);
+    max-width: 520px;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-secondary {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--text);
+    padding: 1rem 2rem;
+    border: 1px solid rgba(232,238,244,0.2);
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Hero decorative chip */
+  .hero-chip {
+    position: absolute;
+    right: 5vw;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(420px, 38vw);
+    opacity: 0.7;
+  }
+
+  .hero-chip svg { width: 100%; height: auto; }
+
+  /* --- STATS BAR --- */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    padding: 0 5vw;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 2rem 1.5rem;
+    border-right: 1px solid var(--border);
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 2.2rem;
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: var(--mono);
+  }
+
+  /* --- SECTIONS --- */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 7rem 5vw;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-desc {
+    font-size: 1.05rem;
+    color: rgba(232,238,244,0.65);
+    max-width: 540px;
+    font-weight: 300;
+    margin-bottom: 4rem;
+  }
+
+  /* --- SERVICES --- */
+  #services { background: var(--bg2); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .service-card {
+    background: var(--bg2);
+    padding: 2.5rem 2rem;
+    position: relative;
+    transition: background 0.25s;
+  }
+
+  .service-card:hover { background: var(--bg3); }
+
+  .service-icon {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .service-card h3 {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  .service-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+
+  .service-tag {
+    display: inline-block;
+    margin-top: 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.65rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* --- STM32 EXPERTISE --- */
+  .expertise-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .expertise-split { grid-template-columns: 1fr; gap: 3rem; }
+    nav ul { display: none; }
+    .hero-chip { display: none; }
+    .stats-bar { flex-wrap: wrap; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); min-width: 50%; }
+  }
+
+  .expertise-visual {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 2;
+    color: var(--muted);
+  }
+
+  .expertise-visual .kw { color: #569cd6; }
+  .expertise-visual .fn { color: #dcdcaa; }
+  .expertise-visual .str { color: #ce9178; }
+  .expertise-visual .cm { color: #6a9955; }
+  .expertise-visual .num { color: var(--accent); }
+  .expertise-visual .indent { padding-left: 1.5rem; }
+  .expertise-visual .indent2 { padding-left: 3rem; }
+
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.8rem;
+    letter-spacing: 0.05em;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .chip:hover, .chip.active {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* --- PROCESS --- */
+  #process { background: var(--bg2); }
+
+  .process-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .process-step {
+    display: flex;
+    gap: 2.5rem;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--border2);
+    align-items: flex-start;
+  }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    min-width: 40px;
+    padding-top: 0.25rem;
+  }
+
+  .step-content h3 {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-content p {
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 560px;
+  }
+
+  /* --- CONTACT --- */
+  #contact { background: var(--bg); }
+
+  .contact-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 4rem;
+    border-radius: 2px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .contact-box { grid-template-columns: 1fr; padding: 2.5rem; gap: 2.5rem; }
+  }
+
+  .contact-box h2 { margin-bottom: 1rem; }
+
+  .contact-box p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-details { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .contact-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .contact-item-icon {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .contact-item-icon svg {
+    width: 16px; height: 16px;
+    stroke: var(--accent); fill: none;
+    stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .contact-item-label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+
+  .contact-item-value {
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  /* --- FOOTER --- */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border2);
+    padding: 2rem 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* --- ANIMATIONS --- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow { animation: fadeUp 0.6s ease both; }
+  h1 { animation: fadeUp 0.7s 0.1s ease both; }
+  .hero-desc { animation: fadeUp 0.7s 0.2s ease both; }
+  .hero-actions { animation: fadeUp 0.7s 0.3s ease both; }
+  .hero-chip { animation: fadeUp 0.9s 0.2s ease both; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .blink { animation: pulse 2s ease-in-out infinite; }
+
+  /* Scanline accent on hero */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">Core<span>Edge</span></a>
+  <ul>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#expertise">Expertise</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Embedded Systems Engineering</div>
+  <h1>
+    Firmware.<br>
+    <span class="line-accent">Silicon.</span><br>
+    Solutions.
+  </h1>
+  <p class="hero-desc">
+    We design, develop, and deploy embedded systems built on the STM32 platform — from concept to production-ready firmware.
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Start a Project</a>
+    <a href="#services" class="btn-secondary">Our Services</a>
+  </div>
+
+  <div class="hero-chip">
+    <svg viewBox="0 0 380 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- PCB board outline -->
+      <rect x="60" y="60" width="260" height="200" rx="6" stroke="rgba(0,229,255,0.2)" stroke-width="1" fill="rgba(0,229,255,0.02)"/>
+      <!-- Center chip -->
+      <rect x="130" y="110" width="120" height="100" rx="3" stroke="rgba(0,229,255,0.6)" stroke-width="1.5" fill="rgba(0,229,255,0.06)"/>
+      <text x="190" y="158" font-family="Space Mono" font-size="10" fill="rgba(0,229,255,0.9)" text-anchor="middle">STM32</text>
+      <text x="190" y="173" font-family="Space Mono" font-size="8" fill="rgba(0,229,255,0.5)" text-anchor="middle">H7 Series</text>
+
+      <!-- Left pins -->
+      <line x1="60" y1="130" x2="130" y2="130" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="60" y1="150" x2="130" y2="150" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="60" y1="170" x2="130" y2="170" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="60" y1="190" x2="130" y2="190" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="60" y1="210" x2="130" y2="210" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+
+      <!-- Left pin dots -->
+      <circle cx="60" cy="130" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="60" cy="150" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="60" cy="170" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="60" cy="190" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="60" cy="210" r="3" fill="rgba(0,229,255,0.4)"/>
+
+      <!-- Right pins -->
+      <line x1="250" y1="130" x2="320" y2="130" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="250" y1="150" x2="320" y2="150" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="250" y1="170" x2="320" y2="170" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="250" y1="190" x2="320" y2="190" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="250" y1="210" x2="320" y2="210" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+
+      <circle cx="320" cy="130" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="320" cy="150" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="320" cy="170" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="320" cy="190" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="320" cy="210" r="3" fill="rgba(0,229,255,0.4)"/>
+
+      <!-- Top pins -->
+      <line x1="150" y1="60" x2="150" y2="110" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="170" y1="60" x2="170" y2="110" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="190" y1="60" x2="190" y2="110" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="210" y1="60" x2="210" y2="110" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="230" y1="60" x2="230" y2="110" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+
+      <circle cx="150" cy="60" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="170" cy="60" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="190" cy="60" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="210" cy="60" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="230" cy="60" r="3" fill="rgba(0,229,255,0.4)"/>
+
+      <!-- Bottom pins -->
+      <line x1="150" y1="210" x2="150" y2="260" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="170" y1="210" x2="170" y2="260" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="190" y1="210" x2="190" y2="260" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="210" y1="210" x2="210" y2="260" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+      <line x1="230" y1="210" x2="230" y2="260" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+
+      <circle cx="150" cy="260" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="170" cy="260" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="190" cy="260" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="210" cy="260" r="3" fill="rgba(0,229,255,0.4)"/>
+      <circle cx="230" cy="260" r="3" fill="rgba(0,229,255,0.4)"/>
+
+      <!-- Trace details -->
+      <polyline points="80,80 80,100 100,100" stroke="rgba(0,229,255,0.15)" stroke-width="1" fill="none"/>
+      <polyline points="300,80 300,100 280,100" stroke="rgba(0,229,255,0.15)" stroke-width="1" fill="none"/>
+      <circle cx="80" cy="80" r="4" stroke="rgba(0,229,255,0.3)" stroke-width="1" fill="rgba(0,229,255,0.1)"/>
+      <circle cx="300" cy="80" r="4" stroke="rgba(0,229,255,0.3)" stroke-width="1" fill="rgba(0,229,255,0.1)"/>
+
+      <!-- Pulsing dot -->
+      <circle cx="190" cy="145" r="3" fill="rgba(0,229,255,0.9)" class="blink"/>
+    </svg>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num">50+</div>
+    <div class="stat-label">Projects Delivered</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">8+</div>
+    <div class="stat-label">Years STM32 Experience</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">15+</div>
+    <div class="stat-label">STM32 Variants Mastered</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">On-Time Delivery Rate</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-inner">
+    <div class="section-label">// 01 — Services</div>
+    <h2>What We Build</h2>
+    <p class="section-desc">End-to-end embedded engineering from requirements through production firmware.</p>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="1"/><path d="M6 7V5a2 2 0 012-2h8a2 2 0 012 2v2"/><line x1="12" y1="12" x2="12" y2="12.01"/></svg>
+        </div>
+        <h3>Firmware Development</h3>
+        <p>Bare-metal and RTOS-based firmware for STM32 microcontrollers. HAL, LL, and custom driver development tailored to your hardware.</p>
+        <span class="service-tag">STM32 HAL / LL</span>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <h3>BSP & Driver Engineering</h3>
+        <p>Board support packages, peripheral drivers, communication stacks — UART, SPI, I2C, CAN, USB. Reliable low-level code that just works.</p>
+        <span class="service-tag">Peripherals / Protocol Stacks</span>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3>RTOS Integration</h3>
+        <p>FreeRTOS design and integration with task scheduling, synchronization primitives, and deterministic real-time behavior.</p>
+        <span class="service-tag">FreeRTOS / ThreadX</span>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
+        <h3>Wireless Connectivity</h3>
+        <p>Bluetooth, Wi-Fi, and sub-GHz radio integration using STM32WB/WL series and companion chipsets for IoT applications.</p>
+        <span class="service-tag">BLE / Wi-Fi / LoRa</span>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+        </div>
+        <h3>System Architecture</h3>
+        <p>Hardware-software co-design, MCU selection, power budgeting, and system-level architecture for new product development.</p>
+        <span class="service-tag">New Product Development</span>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+        </div>
+        <h3>Testing & Validation</h3>
+        <p>Unit testing with Unity/CppUTest, HIL simulation setups, and systematic validation against your functional and safety requirements.</p>
+        <span class="service-tag">HIL / Unit Testing</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERTISE -->
+<section id="expertise">
+  <div class="section-inner">
+    <div class="section-label">// 02 — Platform Expertise</div>
+    <h2>Deep STM32 Knowledge</h2>
+
+    <div class="expertise-split">
+      <div>
+        <p class="section-desc" style="margin-bottom: 2rem;">
+          We live and breathe STM32. From ultra-low-power L0 variants to the DSP-capable H7, we select the right silicon and extract maximum performance for every application.
+        </p>
+
+        <div class="chip-list">
+          <span class="chip active">STM32F4</span>
+          <span class="chip active">STM32H7</span>
+          <span class="chip">STM32L4</span>
+          <span class="chip">STM32G0</span>
+          <span class="chip">STM32G4</span>
+          <span class="chip">STM32WB</span>
+          <span class="chip">STM32WL</span>
+          <span class="chip">STM32U5</span>
+          <span class="chip">STM32C0</span>
+          <span class="chip">STM32MP1</span>
+        </div>
+
+        <div style="margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--mono); font-size: 0.78rem; color: var(--muted);">CubeMX / CubeIDE</span>
+            <div style="width: 60%; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden;">
+              <div style="width: 95%; height: 100%; background: var(--accent);"></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--mono); font-size: 0.78rem; color: var(--muted);">FreeRTOS</span>
+            <div style="width: 60%; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden;">
+              <div style="width: 90%; height: 100%; background: var(--accent);"></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--mono); font-size: 0.78rem; color: var(--muted);">ARM Cortex-M (M0–M7)</span>
+            <div style="width: 60%; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden;">
+              <div style="width: 92%; height: 100%; background: var(--accent);"></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-family: var(--mono); font-size: 0.78rem; color: var(--muted);">Embedded C / C++</span>
+            <div style="width: 60%; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden;">
+              <div style="width: 98%; height: 100%; background: var(--accent);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="expertise-visual">
+        <div><span class="cm">/* CoreEdge :: STM32H7 Init */</span></div>
+        <div><span class="kw">#include</span> <span class="str">"stm32h7xx_hal.h"</span></div>
+        <br>
+        <div><span class="kw">void</span> <span class="fn">SystemClock_Config</span>(<span class="kw">void</span>) {</div>
+        <div class="indent"><span class="fn">RCC_OscInitTypeDef</span> osc = {<span class="num">0</span>};</div>
+        <div class="indent">osc.OscillatorType =</div>
+        <div class="indent2">RCC_OSCILLATORTYPE_HSE;</div>
+        <div class="indent">osc.HSEState =</div>
+        <div class="indent2">RCC_HSE_ON;</div>
+        <div class="indent">osc.PLL.PLLState =</div>
+        <div class="indent2">RCC_PLL_ON;</div>
+        <div class="indent">osc.PLL.PLLM = <span class="num">5</span>;</div>
+        <div class="indent">osc.PLL.PLLN = <span class="num">160</span>;</div>
+        <div class="indent">osc.PLL.PLLP = <span class="num">2</span>;</div>
+        <div class="indent"><span class="cm">/* 400 MHz system clock */</span></div>
+        <div class="indent"><span class="fn">HAL_RCC_OscConfig</span>(&osc);</div>
+        <div>}</div>
+        <br>
+        <div><span class="cm">/* STATUS: <span class="blink" style="color: rgba(0,229,255,0.9);">■</span> READY */</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="section-inner">
+    <div class="section-label">// 03 — How We Work</div>
+    <h2>Our Engagement Model</h2>
+    <p class="section-desc">Structured, transparent, and built for embedded realities.</p>
+
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>Discovery & Requirements</h3>
+          <p>We dig into your hardware constraints, power budgets, communication needs, and timing requirements before writing a single line of code.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>Architecture & MCU Selection</h3>
+          <p>We define the software architecture, select the optimal STM32 variant, and document the system design for your review and sign-off.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>Iterative Firmware Development</h3>
+          <p>Agile sprints with working firmware delivered at each milestone. You stay in the loop — no black-box development.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>Testing & Validation</h3>
+          <p>Systematic testing against requirements: unit tests, integration tests, hardware-in-the-loop validation, and edge-case stress testing.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <h3>Handoff & Support</h3>
+          <p>Full source code, documentation, and build system handoff. We offer ongoing support packages to cover post-deployment needs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-label">// 04 — Contact</div>
+    <div class="contact-box">
+      <div>
+        <h2>Let's Build Something Together</h2>
+        <p>Tell us about your embedded systems challenge. We'll respond within one business day.</p>
+        <a href="mailto:hello@coreedge.io" class="btn-primary">Send a Message</a>
+      </div>
+
+      <div class="contact-details">
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Email</div>
+            <div class="contact-item-value">hello@coreedge.io</div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Location</div>
+            <div class="contact-item-value">Remote-first · Worldwide</div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Response Time</div>
+            <div class="contact-item-value">Within 1 business day</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 CoreEdge Engineering</p>
+  <p style="font-size: 0.68rem; letter-spacing: 0.05em;">Embedded Systems · STM32 · Firmware</p>
+</footer>
+
+</body>
+</html>
